@@ -211,6 +211,16 @@ class DinoVisionTransformer(nn.Module):
         for blk in self.blocks:
             x = blk(x)
         x_norm = self.norm(x)
+        if prompt is not None:
+            n_prompts = prompt.shape[1]
+            return {
+            "x_norm_clstoken": x_norm[:, 0],
+            "x_norm_regtokens": x_norm[:, 1 : self.num_register_tokens + 1],
+            "x_norm_prompts": x_norm[:, self.num_register_tokens + 1 : n_prompts + 1],
+            "x_norm_patchtokens": x_norm[:, self.num_register_tokens + n_prompts + 1 :],
+            "x_prenorm": x,
+            "masks": masks,
+        }
         return {
             "x_norm_clstoken": x_norm[:, 0],
             "x_norm_regtokens": x_norm[:, 1 : self.num_register_tokens + 1],
@@ -253,8 +263,8 @@ class DinoV2Encoder(nn.Module):
         super().__init__()
         self.model = vit_base(patch_size=14, block_chunks=0, init_values=1.0)
 
-    def forward(self, x, prompt):
-        return self.model(x, prompt=prompt)
+    def forward(self, x, prompt, is_training=False):
+        return self.model(x, prompt=prompt, is_training=is_training)
 
 class S3birDinov2(nn.Module):
     def __init__(self, n_prompts=3, prompt_dim=768):
@@ -266,9 +276,13 @@ class S3birDinov2(nn.Module):
         self.sk_prompt = nn.Parameter(torch.randn(n_prompts, prompt_dim))
         self.img_prompt = nn.Parameter(torch.randn(n_prompts, prompt_dim))
 
-    def forward(self, data, dtype='image'):
+    def forward(self, data, dtype='image', is_training=False):
         if dtype == 'image':
-            feat = self.encoder(data, prompt=self.img_prompt.expand(data.shape[0], -1, -1))
+            feat = self.encoder(data, 
+                                prompt=self.img_prompt.expand(data.shape[0], -1, -1),
+                                is_training=is_training)
         else:
-            feat = self.encoder(data, prompt=self.sk_prompt.expand(data.shape[0], -1, -1))
+            feat = self.encoder(data, 
+                                prompt=self.sk_prompt.expand(data.shape[0], -1, -1),
+                                is_training=is_training)
         return feat

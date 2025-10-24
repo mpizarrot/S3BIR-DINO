@@ -1,24 +1,24 @@
-# Extract embeddings with `S3BIR-DINOv2`
+# Extract embeddings with `S3BIR-DINO`
 
-This repository provides a simple pipeline to extract embeddings from images and sketches using our S3BIR-DINOv2 model.
+This repository provides a simple pipeline to extract embeddings from images and sketches using our S3BIR-DINOv2(v3) model.
 (Prereqs: Python 3.9+, `torch`, `torchvision`, `Pillow`.)
 
 
 ## 1) Download the checkpoint
-You can download the checkpoint from [this link](http://201.238.213.114:2280/sketchapp/get_files/s3bir_dinov2_flickr.ckpt).
+You can download the checkpoints from [this link](http://201.238.213.114:2280/sketchapp/get_files/s3bir_dinov2_flickr.ckpt) (S3BIR-DINOv2) and [this link](http://201.238.213.114:2280/sketchapp/get_files/s3bir_dinov3_ecommflickr.ckpt) (S3BIR-DINOv3).
 
 ## 2) Load the model
 
 ```python
 import torch
-from model import S3birDinov2
+from dinov3_model import S3birDinov3
 
-ckpt_path = "s3bir_dinov2_flickr.ckpt"
+ckpt_path = "s3bir_dinov3_ecommflickr.ckpt" #"s3bir_dinov2_flickr.ckpt"
 checkpoint = torch.load(ckpt_path, map_location='cpu', weights_only=False)
 state_dict = checkpoint.get("state_dict", checkpoint)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model = S3birDinov2().to(device)
+model = S3birDinov3().to(device)
 model.load_state_dict(state_dict)
 model.eval()
 
@@ -41,7 +41,7 @@ transform = transforms.Compose([
 img = Image.open("image.jpg").convert("RGB")
 sketch = Image.open("sketch.png").convert("RGB")
 
-img_tensor = transform(img).unsqueeze(0).to(device)     # [1, 3, 224, 224]
+img_tensor = transform(img).unsqueeze(0).to(device)     # [1, 3, 256, 256]
 sketch_tensor = transform(sketch).unsqueeze(0).to(device)
 ```
 
