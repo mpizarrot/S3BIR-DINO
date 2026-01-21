@@ -5,7 +5,7 @@ This repository provides a simple pipeline to extract embeddings from images and
 
 
 ## 1) Download the checkpoint
-You can download the checkpoints from [this link](http://201.238.213.114:2280/sketchapp/get_files/s3bir_dinov2_flickr.ckpt) (S3BIR-DINOv2) and [this link](http://201.238.213.114:2280/sketchapp/get_files/s3bir_dinov3_ecommflickr.ckpt) (S3BIR-DINOv3).
+You can download the checkpoints from [this link](http://201.238.213.114:2280/sketchapp/get_files/s3bir_dinov2_flickr.ckpt) (S3BIR-DINOv2) and [this link](http://201.238.213.114:2280/sketchapp/get_files/skDinoV3_sketchy.ckpt) (skDINOv3).
 
 ## 2) Load the model
 
@@ -13,7 +13,7 @@ You can download the checkpoints from [this link](http://201.238.213.114:2280/sk
 import torch
 from dinov3_model import S3birDinov3
 
-ckpt_path = "s3bir_dinov3_ecommflickr.ckpt" #"s3bir_dinov2_flickr.ckpt"
+ckpt_path = "skDinoV3_sketchy.ckpt" #"s3bir_dinov2_flickr.ckpt"
 checkpoint = torch.load(ckpt_path, map_location='cpu', weights_only=False)
 state_dict = checkpoint.get("state_dict", checkpoint)
 
