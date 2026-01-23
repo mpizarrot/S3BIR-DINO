@@ -4,7 +4,7 @@ from PIL import Image
 import torch.nn.functional as F
 import matplotlib.pyplot as plt
 from torchvision.transforms import v2
-from s3bir_dinov3_model import S3birDinov3
+from dinov3_model import S3birDinov3
 
 def make_transform():
     to_tensor = v2.ToImage()
@@ -148,8 +148,8 @@ if __name__ == "__main__":
     model.load_state_dict(state_dict)
     model.eval()
 
-    img = Image.open("/home/data/Datasets/sketchy/photo/airplane/n02691156_10578.jpg").convert("RGB")
-    sketch = Image.open("/home/data/Datasets/sketchy/sketch/airplane/n02691156_10151-1.png").convert("RGB")
+    img = Image.open("/home/shared_data/sketches/sketchy/photo/airplane/n02691156_10578.jpg").convert("RGB")
+    sketch = Image.open("/home/shared_data/sketches/sketchy/sketch/airplane/n02691156_10151-1.png").convert("RGB")
 
     transform = make_transform()
     img_tensor = transform(img).unsqueeze(0).to(device)     # [1, 3, 224, 224]
@@ -174,6 +174,6 @@ if __name__ == "__main__":
     visualize_patch_matching(
     img, sketch,
     patch_img, patch_sketch,
-    img_patch_idx=100, #99 120
+    img_patch_idx=124, #99 120
     sketch_patch_idx=148 #60 163 184
 )
